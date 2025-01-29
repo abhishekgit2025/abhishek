@@ -1,21 +1,31 @@
 pipeline {
-  agent none
-  stages {
-    stage('Back-end') {
-      agent {
-        docker { image 'maven:3.8.1-adoptopenjdk-11' }
-      }
-      steps {
-        sh 'mvn --version'
-      }
+    agent none
+    stages {
+        stage('Back-end') {
+            agent { 
+                docker { 
+                    image 'maven:3.8.1-adoptopenjdk-11' 
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'  // Allow Docker inside Docker if needed
+                }
+            }
+            steps {
+                script {
+                    sh 'mvn --version'
+                }
+            }
+        }
+        stage('Front-end') {
+            agent {
+                docker { 
+                    image 'node:16-alpine'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'  // Allow Docker inside Docker if needed
+                }
+            }
+            steps {
+                script {
+                    sh 'node --version'
+                }
+            }
+        }
     }
-    stage('Front-end') {
-      agent {
-        docker { image 'node:16-alpine' }
-      }
-      steps {
-        sh 'node --version'
-      }
-    }
-  }
 }
