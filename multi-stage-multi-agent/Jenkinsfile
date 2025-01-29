@@ -2,25 +2,29 @@ pipeline {
     agent none
     stages {
         stage('Back-end') {
-            agent {
-                docker {
-                    image 'maven:3.8.1-adoptopenjdk-11'
-                    label 'docker'  // Make sure Jenkins is running on a node labeled 'docker' or adjust accordingly
+            agent { 
+                docker { 
+                    image 'maven:3.8.1-adoptopenjdk-11' 
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'  // Allow Docker inside Docker if needed
                 }
             }
             steps {
-                sh 'mvn --version'
+                script {
+                    sh 'mvn --version'
+                }
             }
         }
         stage('Front-end') {
             agent {
-                docker {
+                docker { 
                     image 'node:16-alpine'
-                    label 'docker'  // Again, ensure that Jenkins has access to this node
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'  // Allow Docker inside Docker if needed
                 }
             }
             steps {
-                sh 'node --version'
+                script {
+                    sh 'node --version'
+                }
             }
         }
     }
